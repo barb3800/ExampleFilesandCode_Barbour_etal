@@ -8,6 +8,9 @@
 ## Author and Contact Info: Nicole Barbour, nbarbour@umd.edu 
 ## Code as example for Barbour et al., "Incorporating multidimensional behavior into a dynamic management tool for a critically endangered and migratory species"
 
+# NOTE: the data files you download from Global Fishing Watch can be MASSIVE and cannot be stored on Github
+## The first portion of code here is just for example (lines 32-95) but does not need to be run if you aren't getting your own data
+
 ##############################################
 # SET UP 
 ##############################################
@@ -59,21 +62,11 @@ effort_df<-future_map_dfr(effort_2020$file,.f=read_csv)
 #add date info
 effort_df_2020<-effort_df %>% mutate(year=year(date),month=month(date))
 
-# save data
-save(effort_df_2020,file="./Example_Data/2020_GFW_Data.rda")
-save(effort_df_2019,file="./Example_Data/2019_GFW_Data.rda")
-save(effort_df_2018,file="./Example_Data/2018_GFW_Data.rda")
-
 ###############################################
 # STEP 2: PROCESS DATA
 ###############################################
 
 # The data needs to be cropped to the boundaries of the study region & converted into an sf object
-
-# load in data
-load("./Example_Data/2020_GFW_Data.rda")
-load("./Example_Data/2019_GFW_Data.rda")
-load("./Example_Data/2018_GFW_Data.rda")
 
 # crop to study region boundaries
 ## use WGS 1984 crs (same as polygons, EPSG code 4326)
@@ -95,9 +88,20 @@ levels(effort_2020_s$geartype)<-c("Drifting Longline", "Fishing", "Pole and Line
 levels(effort_2019_s$geartype)<-c("Drifting Longline", "Fishing","Fixed Gear", "Pole and Line","Purse Seines","Set Longlines","Squid Jigger","Trawlers","Trollers","Tuna Purse Seines")
 levels(effort_2018_s$geartype)<-c("Drifting Longline", "Fishing","Squid Jigger","Trawlers","Trollers","Tuna Purse Seines")
 
+# save data
+save(effort_2020_s,file="./Example_Data/2020_GFW_Data.rda")
+save(effort_2019_s,file="./Example_Data/2019_GFW_Data.rda")
+save(effort_2018_s,file="./Example_Data/2018_GFW_Data.rda")
+
 ##########################################################
 # STEP 3: AGGREGATE ACROSS YEARS
 #########################################################
+
+# NOTE: here you can load in the intermediate data, that has been subset to the study region and can be used to run the rest of the example code
+# load in data
+load(file="./Example_Data/2020_GFW_Data.rda")
+load(file="./Example_Data/2019_GFW_Data.rda")
+load(file="./Example_Data/2018_GFW_Data.rda")
 
 # Next we aggregate the data across years (2018-2020) by finding the total effort (sum) across years in a given lat/long cell 
 
