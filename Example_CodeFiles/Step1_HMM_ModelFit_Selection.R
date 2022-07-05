@@ -10,7 +10,7 @@
 # load libraries (note: all these packages need to be installed before use)
 # you will also need up-to-date versions of R and Rtools installed
 ## for help with rstan installation, see: https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
-library(rstan);library(ggplot2)
+library(rstan);library(ggplot2);library(magrittr);library(dplyr)
 
 # set working directory
 setwd("yourfilepathhere")
@@ -204,10 +204,14 @@ for (i in c(1:length(turtle_stan))){
 # just "better" ones, and ultimately dependent on your data and research questions
 # but if all of your models look reasonable, quantitative comparisons can help you choose!
 
-# We will be using Leave-One-Out Cross Validation (LOO) 
-## this is recommended instead of AIC/DIC/BIC for Bayesian models
-## see Vehtari et al. 2017, 2019 and the "loo" R package documentation and vignettes
+# there are a couple methods you can use:
+# 1) Leave-One-Out Cross Validation (LOO) 
+# 2) Integrated Completed Likelihood (ICL)
 
+# both are recommended instead of AIC/DIC/BIC for Bayesian models
+
+# LOO Method --------------------------------------------------------------------
+## see Vehtari et al. 2017, 2019 and the "loo" R package documentation and vignettes
 ## vignette: https://mc-stan.org/loo/articles/loo2-with-rstan.html
 
 # make sure it's installed!
@@ -280,6 +284,86 @@ for (i in c(1:length(turtle_stan))){
 
 # save your fitted models for the next steps: visualizations and diagnostics!
 save(model_final,file="./Example_Data/final_HMM_model.rds")
+
+# ICL Method ----------------------------------------------------------------
+
+## see Pohle et al. 2017, "Selecting the Number of States in Hidden Markov Models: Pragmatic Solutions Illustrated"Using Animal Movement
+# if the state-dependent distributions are independent enough of each other, this is the preferable method for selection an opimal number of states
+# however, as Pohle et al. discusses,these choices should also ALWAYS be accompanied by your biological intuition!
+
+# to determine the ICL "by hand", we need to fit Viterbi versions of each model
+# we can use the "model_final" object above for the 3 state model 
+# below, we fit the Viterbi version of 2-state structure for Model 1
+
+# rename "model_final" 
+model1_3s<-model_final
+
+# fit Viterbit versions for model 1 (2-State)
+model1_2s<-c()
+for (i in c(1:length(turtle_stan))){
+  file.remove("./Stan_CodeFiles/Model1_2State_Viterbi.rds") # this code removes intermediate rds files that can mess up model fitting...make sure it reads to the file path of your Stan code files...
+  model1_2s[[i]]<-stan(file="./Stan_CodeFiles/Model1_2State_Viterbi.stan",data=turtle_stan[[i]],
+                         chains=4,iter=2000,control=list(adapt_delta=0.95,max_treedepth=15),seed="123")
+}
+
+# the formula for determining the ICL is as follows: 
+## ICL= -2 * sum(Log Likelihood By State) + no. of parameters * log(number of data observations)
+
+# for-loop to determine the ICL:
+
+## 3-state model
+ICL_3s<-c() # empty list of ICL's for 3-state model
+for (i in c(1:length(model1_3s))){
+  viterbi <- rstan::extract(model1_3s[[i]], pars = "viterbi")[[1]] # extract Viterbi state predictions for all chains
+  state.hat <- ceiling(colMeans(viterbi)) # find mean Viterbi state across chains
+  mu.hats <- rstan::extract(model1_3s[[i]],pars=c("mu"))$mu %>% apply(2, median) # extract mu parameter for all chains, find median 
+  sigma.hats <- rstan::extract(model1_3s[[i]],pars=c("sigma"))$sigma %>% apply(2, median) # extract sigma parameter for all chains, find median 
+  lambda.hat <- median(rstan::extract(model1_3s[[i]],pars=c("lambda"))$lambda) # extract lambda parameter for all chains 
+  Pr.hats <- rstan::extract(model1_3s[[i]],pars=c("Pr"))$Pr %>% apply(2, median) # extract Pr parameter for all chains, find median 
+  # find the log likelihood by state
+  logLikeByState <- with(turtle_stan[[i]], 
+                         dcauchy(V, mu.hats[state.hat], sigma.hats[state.hat], log = TRUE) + 
+                           dpois(N1, lambda.hat*Pr.hats[state.hat], log = TRUE) + 
+                           dpois(N2, lambda.hat*(1 - Pr.hats[state.hat]), log = TRUE)) 
+  # make a variable for the number of parameters (this differs for a 2 state model)
+  p <- 3 + #mus
+    3 + #sigmas
+    1 + #lambda
+    3 + #Prs
+    6 # transition probabilities
+  # find the ICL with the formula (see Pohle et al)
+  ICL_3s[[i]] <- -2*sum(logLikeByState) + p * log(turtle_stan[[i]]$T)
+}
+
+## 2-state model
+ICL_2s<-c() # empty list of ICL's for 2-state model
+for (i in c(1:length(model1_2s))){
+  viterbi <- rstan::extract(model1_2s[[i]], pars = "viterbi")[[1]] # extract Viterbi state predictions for all chains
+  state.hat <- ceiling(colMeans(viterbi)) # find mean Viterbi state across chains
+  mu.hats <- rstan::extract(model1_2s[[i]],pars=c("mu"))$mu %>% apply(2, median) # extract mu parameter for all chains, find median 
+  sigma.hats <- rstan::extract(model1_2s[[i]],pars=c("sigma"))$sigma %>% apply(2, median) # extract sigma parameter for all chains, find median 
+  lambda.hat <- median(rstan::extract(model1_2s[[i]],pars=c("lambda"))$lambda) # extract lambda parameter for all chains 
+  Pr.hats <- rstan::extract(model1_2s[[i]],pars=c("Pr"))$Pr %>% apply(2, median) # extract Pr parameter for all chains, find median 
+  # find the log likelihood by state
+  logLikeByState <- with(turtle_stan[[i]], 
+                         dcauchy(V, mu.hats[state.hat], sigma.hats[state.hat], log = TRUE) + 
+                           dpois(N1, lambda.hat*Pr.hats[state.hat], log = TRUE) + 
+                           dpois(N2, lambda.hat*(1 - Pr.hats[state.hat]), log = TRUE)) 
+  # make a variable for the number of parameters (this differs for a 3 state model)
+  p <- 2 + #mus
+    2 + #sigmas
+    1 + #lambda
+    2 + #Prs
+    2 # transition probabilities
+  # find the ICL with the formula (see Pohle et al)
+  ICL_2s[[i]] <- -2*sum(logLikeByState) + p * log(turtle_stan[[i]]$T)
+}
+
+# similar to AIC/BIC, you want the model with the lowest ICL score:
+ICL_3s
+ICL_2s
+
+# using ICL, it looks like a 3-state model is preferred for id1 but a 2-state model is preferred (slightly) for ids 2/3
 
 #########################################################################
 # HINTS
