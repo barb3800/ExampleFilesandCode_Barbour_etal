@@ -7,7 +7,7 @@
 
 <br>
 
-#### The goal of this repository is to provide example files and code to replicate similar results to Barbour et al. All questions should be directed to Nicole Barbour at *nbarbour@umd.edu* and acknowledgements should include citations to the main paper and the code authors (Nicole Barbour for most files, Nicole Barbour and Dr. Elie Gurarie for Stan code files). The example data has been "jittered" from 3 real turtle tracks, with the original, raw data owned by Upwell (https://www.upwell.org/) and originally published in Shillinger et al. (2008, 2010, 2011). Although users are welcome to adopt code to their purposes, no modifications may be made to original code, data, or this Github repository.
+#### The goal of this repository is to provide example files and code to replicate similar results to Barbour et al. All questions should be directed to Nicole Barbour at *barbour@esf.edu* and acknowledgements should include citations to the main paper and the code authors (Nicole Barbour for most files, Nicole Barbour and Dr. Elie Gurarie for Stan code files). The example data has been "jittered" from 3 real turtle tracks, with the original, raw data owned by Upwell (https://www.upwell.org/) and originally published in Shillinger et al. (2008, 2010, 2011). Although users are welcome to adopt code to their purposes, no modifications may be made to original code, data, or this Github repository.
 <br> 
 
 ![](Markdown_Images/BehaviorStates_Map.png)
