@@ -1,4 +1,4 @@
-## This is a repository with example files for the Supplement of Barbour et al., *Incorporating multidimensional behavior into a dynamic management tool for a critically endangered and migratory species*.
+## This is a repository with example files for the Supplement of Barbour et al., 2023, *Incorporating multidimensional behavior into a dynamic management tool for a critically endangered and migratory species*. Available at: (https://conbio.onlinelibrary.wiley.com/doi/10.1111/cobi.14114).
 <br>
 
 ![](Markdown_Images/Bailey2012b_leatherback_GL.PNG)
