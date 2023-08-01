@@ -1,4 +1,4 @@
-## This is a repository with example files for the Supplement of Barbour et al., 2023, *Incorporating multidimensional behavior into a dynamic management tool for a critically endangered and migratory species*. Available at: (https://conbio.onlinelibrary.wiley.com/doi/10.1111/cobi.14114).
+## This is a repository with example files for the Supplement of Barbour et al., 2023, *Incorporating multidimensional behavior into a risk management tool for a critically endangered and migratory species*. Available at: https://conbio.onlinelibrary.wiley.com/doi/10.1111/cobi.14114.
 <br>
 
 ![](Markdown_Images/Bailey2012b_leatherback_GL.PNG)
@@ -63,7 +63,7 @@
 *Example of the current Dynamic Management (DM) tool for Eastern Pacific leatherbacks (see Hoover et al. 2019). These monthly residence time maps (example, a) June and b) December) are updated monthly as part of Upwell's South Pacific Turtle Watch tool (https://www.upwell.org/sptw).*
 <br>
 
-#### This work additionlly builds on the results of Barbour et al., *Using machine learning approaches to classify vertical movement profiles and behavior*, where the dive profiles for this population (migratory, Eastern Pacific leatherback turtles) were classified with a Dynamic Time Warp clustering analysis into two ecologically significant groups. The two dive cluster groups differed in both their spatio-temporal distribution and their relationship with environmental covariates, with "D1" dives being deeper and longer compared to "D2" dives. Although both dive types are likely used for foraging behavior, "D2" dives were found to be dominant through the dispersive "corridor" turtles took from their nesting beaches into their foraging grounds within the oligotrophic, South Pacific ocean gyre. The daily counts or proportions of each of these dive types was used in this analysis as a vertical movement variable in the HMM's.
+#### This work additionlly builds on the results of Barbour et al., 2023, *Using machine learning approaches to classify vertical movement profiles and behavior* (Available at: https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.4384), where the dive profiles for this population (migratory, Eastern Pacific leatherback turtles) were classified with a Dynamic Time Warp clustering analysis into two ecologically significant groups. The two dive cluster groups differed in both their spatio-temporal distribution and their relationship with environmental covariates, with "D1" dives being deeper and longer compared to "D2" dives. Although both dive types are likely used for foraging behavior, "D2" dives were found to be dominant through the dispersive "corridor" turtles took from their nesting beaches into their foraging grounds within the oligotrophic, South Pacific ocean gyre. The daily counts or proportions of each of these dive types was used in this analysis as a vertical movement variable in the HMM's.
 <br>
 
 ![](Markdown_Images/Centroid_DiveTypes.PNG)
